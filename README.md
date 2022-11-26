@@ -4,14 +4,14 @@ Efficient Big Data Query System Parameter Optimization based on Pre-selection an
 Magpie
 ===============
 
-This is the code repository for the a big data system parameter automatic optimization paper titled 'Research on Model and Data Driven Automatic Parameter Tuning Method for Big Data Systems'.
+This is the code repository for the a big data system parameter automatic optimization paper titled 'Magpie: Efficient Big Data Query System Parameter Optimization based on Pre-selection and Search Pruning Approach'.
 
 Magpie can recommend the best parameter configuration of the big data system (Flink,Spark,etc.)according to the performance target requirements and parameters set by the user and their range of values.
 
 System Environment 
 ---------
 
-        CentOS 7.5操作系统
+        CentOS 7.5
         Java 1.8
         Python 3.6.3
         Hadoop 2.6.7
@@ -36,22 +36,22 @@ System Operation
 
 2. System configuration: configure flink parameters and values, inspected performance indicators, performance goals, flink execution jobs and job types and other parameters in `conf/config.yaml`
 
-       #Flink系统位置
+       #Flink dir
        flink.dir: /home/experiment/wj2/env/flink-1.11.0
-       #Flink参数：取值
+       #Flink parameters values
        parameters:
            taskmanager.memory.process.size: [2g,3g,4g,5g,6g,7g,8g,9g,40g,12g,14g,16g,18g,20g,24g,30g]
            taskmanager.numberOfTaskSlots: [2,3,4,5,6,7,8,9,10,11,12,16,20]
            taskmanager.memory.network.fraction: [0.05,0.1,0.15,0.2, 0.25]     
            taskmanager.memory.managed.fraction: [0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.6,0.7]
             parallelism.default: [2,4,8,10,16,20,30,32,40,48,50,60,70,80]
-       #性能目标
+       #performance target
        target: 1.0
-       #Flink Job计算模式
+       #Flink Job compute model
        flink.job.model: batch
-       #作业应用类型
+       #job type
        flink.job.type: SQL
-       #作业提交命令
+       #Flink job submit
        job.submit.cmd: ./bin/flink  run -m yarn-cluster  -c  org.apache.flink.benchmark.Benchmark\  
                ~/wj2/project/flink-tpcds/target/flink-tpcds-0.1-SNAPSHOT-jar-with-dependencies.jar\    
        		--database tpcds_bin_orc_100\ 
