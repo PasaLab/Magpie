@@ -23,7 +23,7 @@ Before the system is running, use Python to load the LightGBM dependency package
 
 Before the system runs, please make sure that your job can run normally in the Flink cluster
 
-System Operation
+Prerequisites
 ----------
 
 1. Compile and package
