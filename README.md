@@ -34,7 +34,7 @@ System Operation
 2. System configuration: configure flink parameters and values, inspected performance indicators, performance goals, flink execution jobs and job types and other parameters in `conf/config.yaml`
 
        #Flink dir
-       flink.dir: /home/experiment/wj2/env/flink-1.11.0
+       flink.dir: /env/flink-1.11.0
        #Flink parameters values
        parameters:
            taskmanager.memory.process.size: [2g,3g,4g,5g,6g,7g,8g,9g,40g,12g,14g,16g,18g,20g,24g,30g]
@@ -50,9 +50,8 @@ System Operation
        flink.job.type: SQL
        #Flink job submit
        job.submit.cmd: ./bin/flink  run -m yarn-cluster  -c  org.apache.flink.benchmark.Benchmark\  
-               ~/wj2/project/flink-tpcds/target/flink-tpcds-0.1-SNAPSHOT-jar-with-dependencies.jar\    
+               ~/target/flink-tpcds-0.1-SNAPSHOT-jar-with-dependencies.jar\    
        		--database tpcds_bin_orc_100\ 
-               --hive_conf   /home/experiment/wj2/env/apache-hive-2.3.4-bin/conf\ 
                --queries q7.sql
 
 3. Running
