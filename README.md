@@ -5,7 +5,7 @@ This is the code repository for the a big data system parameter automatic optimi
 
 Magpie can recommend the best parameter configuration of the big data system (Flink,Spark,etc.)according to the performance target requirements and parameters set by the user and their range of values.
 
-System Environment 
+Prerequisites
 ---------
 
         CentOS 7.5
@@ -23,7 +23,7 @@ Before the system is running, use Python to load the LightGBM dependency package
 
 Before the system runs, please make sure that your job can run normally in the Flink cluster
 
-Prerequisites
+Quick Start
 ----------
 
 1. Compile and package
