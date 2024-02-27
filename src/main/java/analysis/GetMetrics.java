@@ -71,11 +71,11 @@ public class GetMetrics {
         while (true) {
             initialJob = jobSubmit.executeJob(initialConfig);
             if(initialJob.getJobStatus().equals("SUCCEEDED")) {
-                LOG.info("初始作业结束！！！");
+                LOG.info("end of initial job!");
                 break;
             }
             else {
-                LOG.error("默认配置参数任务执行失败~~~，继续执行默认配置");
+                LOG.error("The default configuration parameter task execution failed, continue to execute the default configuration");
 //                initialConfig.put("taskmanager.memory.process.size", "4g");
 //                initialConfig.put("taskmanager.numberOfTaskSlots", "8");
                 initialConfig.put("parallelism.default", "4");
@@ -109,7 +109,7 @@ public class GetMetrics {
 
     public  Double getTotalScore( Map<String,Double> metrics, Map<String, Double> queryResult ){
         Double score = 0d;
-        LOG.info("参数性能指标评分：");
+        LOG.info("Parameter Performance Metrics Score：");
         for(String key : metrics.keySet()){
             Double temp = metrics.get(key);
             if( temp <= 0 || !queryResult.containsKey(key))
@@ -148,7 +148,7 @@ public class GetMetrics {
         List<String> taskId = job.getTaskID();
         LOG.info(Arrays.toString(taskId.toArray()));
         if(taskId.isEmpty()){
-            LOG.error("查询taskmanager失败~~~");
+            LOG.error("query taskmanager fail!");
             return 0d;
         }
         //配置文件中的 性能指标：权重
@@ -168,11 +168,11 @@ public class GetMetrics {
             //在Prometheus中查询时间段内的性能指标结果
             JSONArray result = queryPrometheus(start, end, query);
             if (result.isEmpty()){
-                LOG.error(query + "查询结果为空");
+                LOG.error(query + "query result is empty");
                 continue;
             }
             //根据taskID 筛选本次执行结果（prometheus会参杂其他很多job）
-            LOG.info("筛选前："+ result.size());
+            LOG.info("Before selecting："+ result.size());
 //            for (int i = 0; i < result.size(); i++) {
 //                Object json = result.get(i);
 //                if (json instanceof JSONObject) {
@@ -183,9 +183,9 @@ public class GetMetrics {
 //                    }
 //                }
 //            }
-            LOG.info(String.format("筛选后：%s, tm个数：%s", result.size(), taskId.size()));
+            LOG.info(String.format("After selecting：%s, number of tm：%s", result.size(), taskId.size()));
             if(result.isEmpty()){
-                LOG.error("Metrics库中没有当前任务id");
+                LOG.error("task id not found");
                 continue;
             }
             //计算性能指标的平均值
@@ -209,15 +209,15 @@ public class GetMetrics {
         try {
             String url = String.format("%s/api/v1/query_range?query=%s&start=%s&end=%s&step=%d",
                     prometheusIP, query, start, end, distance);
-            LOG.info(String.format("prometheus获取数据地址:%s",url));
+            LOG.info(String.format("prometheus data url:%s",url));
             data = getJson(url).getJSONObject("data");
 
 
         }catch (Exception e){
-            LOG.error("查询prometheus失败："+e);
+            LOG.error("query prometheus fail："+e);
         }finally {
             if (data.isEmpty()) {
-                LOG.error(String.format("连接%s失败", prometheusIP));
+                LOG.error(String.format("connect %s fail", prometheusIP));
                 return new JSONArray();
             }
             return data.getJSONArray("result");
@@ -258,7 +258,7 @@ public class GetMetrics {
 
         String url = String.format("http://%s/jobs", flinkWeb);
         //String url = String.format("%s/proxy/%s/jobs",yarnIP, flinkWeb);
-        LOG.info("flink job地址："+ url );
+        LOG.info("flink job url："+ url );
         try {
             JSONArray jobs = getJson(url).getJSONArray("jobs");
             if(jobs.size() > 0){
@@ -278,7 +278,7 @@ public class GetMetrics {
                 }
             }
         }catch (Exception e){
-            LOG.error("获取flink Source 信息失败："+e);
+            LOG.error("get flink Source fail："+e);
         }finally {
             return sourceVertices;
         }
@@ -310,7 +310,7 @@ public class GetMetrics {
             JSONArray result;
             //间隔采样，采样次数由sampleTimes决定
             for (int i = 0; i < sampleTimes; i++) {
-                LOG.info(String.format("第%s次采样获取流作业的延迟指标和消费指标", i+1));
+                LOG.info(String.format("Obtain the delay indicators and consumption indicators of the streaming job at the %s sampling time", i+1));
                 //对多个源算子统计消费速率
                 for(String id : sourceID){
                     if (metrics.containsKey("consumption.ratio")) {
@@ -321,7 +321,7 @@ public class GetMetrics {
                         result = queryPrometheus(queryTime, queryTime, query);
                         //LOG.info(result.toJSONString());
                         if (result.isEmpty()) {
-                            LOG.error(query + "查询结果为空");
+                            LOG.error(query + "result is empty");
                             continue;
                         }
                         //根据查询结果计算平均值
@@ -333,7 +333,7 @@ public class GetMetrics {
                     result = queryPrometheus(queryTime, queryTime, query);
                     // LOG.info(result.toJSONString());
                     if (result.isEmpty()) {
-                        LOG.error(query + "查询结果为空");
+                        LOG.error(query + "query result is empty");
                         continue;
                     }
                     latency += getAvg(result);
@@ -346,27 +346,27 @@ public class GetMetrics {
             //计算平均消费速率 和 性能评分
             consume /= sampleTimes*sourceID.size();
             if(consume > maxConsumption)
-                LOG.warn("当前消费速率已超过最大消费速率~~");
+                LOG.warn("The current consumption rate has exceeded the maximum consumption rate~~");
             consumeScore = (consume > maxConsumption ?  1 : consume/maxConsumption) * metrics.get("consumption.ratio");
             totalScore += consumeScore;
             //计算平均延迟时间 和 性能评分
             latency = Double.valueOf(String.format("%.4f", latency /(1000*sampleTimes)));
             latencyScore = (1 - latency/ maxLatency)* metrics.get("latency") ;
             if(latency > maxLatency)
-                LOG.warn("当前延迟已超过最大延时时间~~");
+                LOG.warn("The current delay has exceeded the maximum delay time~~");
             totalScore += latencyScore;
         }
-        queryResult.put("consumption.ratio", String.format("%s record/每秒",consume));
+        queryResult.put("consumption.ratio", String.format("%s record/per second",consume));
         queryResult.put("latency", String.format("%ss",latency));
         jobLatency.add(String.format("%ss",latency));
-        jobConsumption.add(String.format("%s record/每秒",consume));
+        jobConsumption.add(String.format("%s record/per second",consume));
         //bug
         //String end = String.valueOf(System.currentTimeMillis()-16*60*60*1000).substring(0,10);
         String end = String.valueOf(System.currentTimeMillis()).substring(0,10);
         //计算从作业结束到现在时间段的其他性能指标
         totalScore += getMetric(start, end, job);
-        LOG.info(String.format("consumption.ratio：%s record/每秒, 性能评分：%s", consume, consumeScore));
-        LOG.info(String.format("latency：%ss,性能评分：%s", latency, latencyScore));
+        LOG.info(String.format("consumption.ratio：%s record/per second, performance score：%s", consume, consumeScore));
+        LOG.info(String.format("latency：%ss, performance score：%s", latency, latencyScore));
         return totalScore;
     }
 

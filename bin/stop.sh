@@ -1,5 +1,5 @@
 #!/bin/bash
-NAME="ParameterOptimization"    #想要杀死的进程
+NAME="ParameterOptimization"    # the process to kill
 echo $NAME
 ID=`ps -ef | grep "$NAME" | grep -v "grep" | awk '{print $2}'`  #注意此shell脚本的名称，避免自杀
 if [ -z "$ID" ];then
