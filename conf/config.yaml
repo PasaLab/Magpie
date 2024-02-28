@@ -1,33 +1,33 @@
-#集群配置
+# Cluster configuration
 flink.dir: /home/experiment/wj2/env/flink-1.11.0
-#配置yarn的主节点：端口
+# Configure the master node of yarn: port
 yarn.ip.port: http://slave033:8088
 ip: 0.0.0.0
 query.distance: 5s
 job.listen.distance: 5s
-#配置本地promethus的ip：端口
+# Configure the local Prometheus ip: port
 prometheus.ip.port: http://slave033:9090
-#Pushgateway的安装目录
+# Pushgateway installation directory
 pushgateway.dir: /home/experiment/wj2/env/monitor/pushgateway-1.2.0.linux-amd64
 
-#判断流任务还是批任务
+# Determine stream task or batch task
 flink.job.type: batch
 
-#流任务稳定时间
+# stream task stabilization time
 stream.stable.time: 10min
-#流作业间隔采样时间段
+# Stream job interval sampling time period
 stream.listen.distance: 1min
-#流作业稳定后采样次数
+# Number of samples after the stream job is stable
 stream.sample.times: 3
 
-#user和keytab的配置在.bashrc|| .profile || .bash_profile 文件中
-#krb5Location是跟keytab同一个目录的krb5.conf文件
+# The configuration of user and keytab is in the .bashrc|| .profile || .bash_profile file
+# krb5Location is the krb5.conf file in the same directory as keytab
 kerberos:
   user: #FL_user
-  keytab: # 路径
-  krb5Location: # 路径
+  keytab: # <path>
+  krb5Location: # <path>
 
-#性能指标：权重
+# Performance metrics weight
 metrics:
   flink_taskmanager_Status_JVM_Memory_Heap_Used/(flink_taskmanager_Status_JVM_Memory_Heap_Committed-134217728): 0.1
   flink_taskmanager_Status_JVM_Memory_NonHeap_Used/flink_taskmanager_Status_JVM_Memory_NonHeap_Committed : 0.2
@@ -37,7 +37,7 @@ metrics:
   #latency: 0.2
   #consumption.ratio: 0.2
 
-#flink参数：取值
+#flink parameter
 parameters:
   taskmanager.memory.process.size: [1g,2g,3g,4g,5g,6g,7g,8g,9g,10g,12g,14g,16g,18g,20g]
   taskmanager.numberOfTaskSlots: [1,2,3,4,5,6,7,8,9,10,11,12]
@@ -47,14 +47,14 @@ parameters:
 
 
 
-#性能目标
+# Performance target
 target: 0.8
-#流式作业
-#job.submit.cmd: ./bin/flink run -m yarn-cluster /home/experiment/wj2/env/yinhan_jars/kafka2flink_new.jar
-#sql作业
-job.submit.cmd: ./bin/flink  run -m yarn-cluster  -c  org.apache.flink.benchmark.Benchmark  /home/experiment/wj2/project/flink-sql-benchmark-master/flink-tpcds_2020_12_09/target/flink-tpcds-0.1-SNAPSHOT-jar-with-dependencies.jar --database tpcds_bin_orc_10 --hive_conf   /home/experiment/wj2/env/apache-hive-2.3.4-bin/conf  --queries q9.sql
-#job.submit.cmd: ./bin/flink run -m yarn-cluster -c org.apache.flink.huawei_sql.test  /home/experiment/wj2/project/flink-sql-benchmark-master/flink-tpcds/target/flink-tpcds-0.1-SNAPSHOT-jar-with-dependencies.jar --database huawei_1 --hive_conf   /home/experiment/wj2/env/apache-hive-2.3.4-bin/conf
-#standalone  cluster yarn-cluster
+# Stream job
+#j ob.submit.cmd: ./bin/flink run -m yarn-cluster /home/experiment/wj2/env/yinhan_jars/kafka2flink_new.jar
+# sqljob
+job.submit.cmd: ./bin/flink run -m yarn-cluster -c org.apache.flink.benchmark.Benchmark /home/experiment/wj2/project/flink-sql-benchmark-master/flink-tpcds_2020_12_09/target /flink-tpcds-0.1-SNAPSHOT-jar-with-dependencies.jar --database tpcds_bin_orc_10 --hive_conf /home/experiment/wj2/env/apache-hive-2.3.4-bin/conf --queries q9.sql
+# job.submit.cmd: ./bin/flink run -m yarn-cluster -c org.apache.flink.huawei_sql.test /home/experiment/wj2/project/flink-sql-benchmark-master/flink-tpcds/ target/flink-tpcds-0.1-SNAPSHOT-jar-with-dependencies.jar --database huawei_1 --hive_conf /home/experiment/wj2/env/apache-hive-2.3.4-bin/conf
+# standalone cluster yarn-cluster
 job.submit.pattern: cluster
 
 memory.slot.min: 0.5g
@@ -66,11 +66,3 @@ max.latency: 1s
 consumption.target: 200000
 genetic.iteration.max: 5
 max.degenerate.count: 3
-
-
-
-
-
-
-
-
